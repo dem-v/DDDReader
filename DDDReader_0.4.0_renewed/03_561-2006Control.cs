@@ -512,7 +512,7 @@ namespace DDDReader_0._4._0_renewed
                            .Subtract(acie_array[startingCarretPosition].StartingDateTime)
                            .TotalMinutes <= 1800)
                 {
-                    singleShift.Add(acie_array[i]);
+                    //singleShift.Add(acie_array[i]);
                     //алгоритм начинается тут
 
                     #region alfa
@@ -635,6 +635,7 @@ namespace DDDReader_0._4._0_renewed
                     i++;
                     continue;
                 }
+                
                 if (acie_array[i].ActivityType == "BREAK/REST")
                     if (acie_array[i].Duration >= 660)
                     {
@@ -658,6 +659,7 @@ namespace DDDReader_0._4._0_renewed
                                 {
                                     if (acie_array[i + 1].Duration >= 540)
                                     {
+                                        //TODO:Add here fix for 1440
                                         FullRestArrayPos = i + 1;
                                         _9hRestPos = i + 1;
                                         break;
@@ -669,6 +671,7 @@ namespace DDDReader_0._4._0_renewed
                                         {
                                             if (acie_array[i + 2].Duration >= 540)
                                             {
+                                                //TODO: Add here fix for 1440
                                                 FullRestArrayPos = i + 2;
                                                 _9hRestPos = i + 2;
                                                 break;
@@ -682,6 +685,7 @@ namespace DDDReader_0._4._0_renewed
                                                 {
                                                     if (acie_array[i + 2].Duration >= 540)
                                                     {
+                                                        //TODO: Add here fix for 1440. Remove it from next code.
                                                         FullRestArrayPos = i + 2;
                                                         _9hRestPos = i + 2;
                                                         break;
@@ -746,27 +750,87 @@ namespace DDDReader_0._4._0_renewed
              }*/
 
             #endregion beta
+            if ((i == 0) && (acie_array[i].Duration > 1440))
+            {
+                ActivityChangeInfoExtended A = new ActivityChangeInfoExtended
+                {
+                    ActivityType = acie_array[i].ActivityType,
+                    Duration = 1440,
+                    EndingDateTime = acie_array[i].StartingDateTime.AddMinutes(1440),
+                    StartingDateTime = acie_array[i].StartingDateTime,
+                    DrivingStatus = acie_array[i].DrivingStatus,
+                    SlotStatus = acie_array[i].SlotStatus,
+                    DriverCardStatus = acie_array[i].DriverCardStatus
+                };
+                ActivityChangeInfoExtended B = new ActivityChangeInfoExtended
+                {
+                    ActivityType = acie_array[i].ActivityType,
+                    Duration = acie_array[i].Duration - 1440,
+                    EndingDateTime = acie_array[i].EndingDateTime,
+                    StartingDateTime = A.EndingDateTime.AddMinutes(1),
+                    DrivingStatus = acie_array[i].DrivingStatus,
+                    SlotStatus = acie_array[i].SlotStatus,
+                    DriverCardStatus = acie_array[i].DriverCardStatus
+                };
+
+                singleShift.Add(A);
+                acie_array[i] = A;
+                acie_array.Insert(i + 1, B);
+
+                return singleShift;
+
+            }
 
             if (i < acie_array.Count)
             {
                 if (acie_array[i].EndingDateTime
                         .Subtract(acie_array[startingCarretPosition].StartingDateTime)
-                        .TotalMinutes > 1440) 
+                        .TotalMinutes > 1440)
                 {
-                    singleShift.Add(acie_array[i]);
-                    ActivityChangeInfoExtended A = new ActivityChangeInfoExtended();
-                    A = acie_array[i];
-                    ActivityChangeInfoExtended B = new ActivityChangeInfoExtended();
-                    B = acie_array[i];
-                    int C = (int)acie_array[i].EndingDateTime
-                                .Subtract(acie_array[startingCarretPosition].StartingDateTime)
-                                .TotalMinutes - 1440;
-                    A.Duration = 0;
-                    A.EndingDateTime = A.EndingDateTime.Subtract(new TimeSpan(0, C, 0));
+                    ActivityChangeInfoExtended A = new ActivityChangeInfoExtended
+                    {
+                        ActivityType = acie_array[i].ActivityType,
+                        Duration = acie_array[i].Duration,
+                        EndingDateTime = acie_array[i].EndingDateTime,
+                        StartingDateTime = acie_array[i].StartingDateTime,
+                        DrivingStatus = acie_array[i].DrivingStatus,
+                        SlotStatus = acie_array[i].SlotStatus,
+                        DriverCardStatus = acie_array[i].DriverCardStatus
+                    };
+                    ActivityChangeInfoExtended B = new ActivityChangeInfoExtended
+                    {
+                        ActivityType = acie_array[i].ActivityType,
+                        Duration = acie_array[i].Duration,
+                        EndingDateTime = acie_array[i].EndingDateTime,
+                        StartingDateTime = acie_array[i].StartingDateTime,
+                        DrivingStatus = acie_array[i].DrivingStatus,
+                        SlotStatus = acie_array[i].SlotStatus,
+                        DriverCardStatus = acie_array[i].DriverCardStatus
+                    };
 
-                    B.Duration = C;
-                    B.StartingDateTime = A.EndingDateTime.Add(new TimeSpan(0, 1, 0));
-                    singleShift[singleShift.Count-1] = A;
+                    int ShiftDurationWithoutLast = 0;
+                    try
+                    {
+                        ShiftDurationWithoutLast = (int)acie_array[i].StartingDateTime
+                                                           .Subtract(singleShift[0].StartingDateTime).TotalMinutes - 1;
+                    }
+                    catch (Exception)
+                    {
+                        ShiftDurationWithoutLast = (int) acie_array[i-1].EndingDateTime
+                                                           .Subtract(acie_array[startingCarretPosition]
+                                                               .StartingDateTime)
+                                                           .TotalMinutes - 1;
+                    }
+                    
+
+
+                    A.Duration = 1440 - ShiftDurationWithoutLast;
+                    A.EndingDateTime = A.StartingDateTime.AddMinutes(A.Duration);
+                    B.StartingDateTime = A.EndingDateTime.AddMinutes(1);
+                    B.Duration = B.Duration - A.Duration;
+
+                    singleShift.Add(A);
+                    acie_array[i] = A;
                     acie_array.Insert(i+1,B);
                     
                     return singleShift;
