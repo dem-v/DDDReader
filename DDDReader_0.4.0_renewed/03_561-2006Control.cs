@@ -751,7 +751,7 @@ namespace DDDReader_0._4._0_renewed
             {
                 if (acie_array[i].EndingDateTime
                         .Subtract(acie_array[startingCarretPosition].StartingDateTime)
-                        .TotalMinutes > 1440)
+                        .TotalMinutes > 1440) 
                 {
                     singleShift.Add(acie_array[i]);
                     ActivityChangeInfoExtended A = new ActivityChangeInfoExtended();
