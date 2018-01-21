@@ -46,7 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="03_561-2006Control.cs" />
+    <Compile Include="03_561-2006Control Rebuilt.cs" />
     <Compile Include="01_DetectionAndInitialDataBuild.cs" />
     <Compile Include="00_MainApp.cs" />
     <Compile Include="05_AnyAdditionalAndSupportiveFunctions.cs" />

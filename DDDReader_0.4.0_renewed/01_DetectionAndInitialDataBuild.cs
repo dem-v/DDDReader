@@ -11,8 +11,9 @@ namespace DDDReader_0._4._0_renewed
 {   //This class performs initial analysis of a binaries from *.DDD file and packages them for export and analysis.
     class DetectionAndInitialDataBuild
     {
+        //Identifies the block that is being read by stream. Each block has their unique hex IDs.
         public static int GetBlockId(string ID, InputRAWDataStorage ds)
-        {
+        { 
             byte[,] blockIDs =
             {
                 {0x00, 0x02, 0x00},
@@ -72,13 +73,13 @@ namespace DDDReader_0._4._0_renewed
             int pos = 0;
             int DataArchiveCounter = 0;
 
-            foreach (var s in blockNamesConst)
+            foreach (var s in blockNamesConst) //Identifies first occurence of a valid block number in input
             {
                 if (s == ID) break;
                 i++;
             }
 
-            foreach (var d in ds.DataArchive) //count THIS!!!!
+            foreach (var d in ds.DataArchive) //Calculate starting position for the current block
             {
                 byte[] b = new byte[3];
                 if (i < 22)
@@ -110,6 +111,7 @@ namespace DDDReader_0._4._0_renewed
             return -1;
         }
 
+        //Supportive function. Compares to byte arrays directly and verifies the length
         public static bool ByteCompare(byte[] a, byte[] b, int l)
         {
             int ch = 0;
@@ -121,6 +123,7 @@ namespace DDDReader_0._4._0_renewed
             return false;
         }
 
+        //Encode by codepage (as specified in protocol). Never works though, something is wrong in the data itself.
         public static string Encode(int codepage, byte[] b)
         {
             try
@@ -193,7 +196,8 @@ namespace DDDReader_0._4._0_renewed
             //TODO
             return 0;
         }*/
-
+        
+        //Exporting to xml Card Identification Data
         public static void CardIdentifier(byte[] value, CardIccIdentification cardICCI, XmlWriter xmlWriter)
         {
             int carretPosition = 0;
@@ -269,6 +273,7 @@ namespace DDDReader_0._4._0_renewed
             xmlWriter.Flush();
         }
 
+        //Export to xml Card Chip Identification Data
         public static void CardChipIdentification(byte[] value, CardChipIdentification cardCI, XmlWriter xmlWriter)
         {
             int carretPosition = 0;
@@ -289,7 +294,8 @@ namespace DDDReader_0._4._0_renewed
 
             xmlWriter.Flush();
         }
-
+        
+        //Export to xml all Other Data on the Driver Card
         public static void DriverCardInput(InputRAWDataStorage ds, PrintingLayout.DriverCard hold, XmlWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("DriverCardInput");
@@ -2241,6 +2247,7 @@ namespace DDDReader_0._4._0_renewed
 
         //All classes are stored in separate file;
 
+        //Create a working class storing all activity data for the specified ReportTimeSpan time period
         public static CardActivityDailyRecord[] PrepareForCounting(PrintingLayout.DriverCard hold, DateTime repStartingDate, DateTime repEndingDate)
         {
             int i = 0;

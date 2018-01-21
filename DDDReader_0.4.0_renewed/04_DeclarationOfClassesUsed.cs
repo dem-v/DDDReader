@@ -5,11 +5,20 @@ using static DDDReader_0._4._0_renewed.AnyAdditionalAndSupportiveFunctions;
 
 namespace DDDReader_0._4._0_renewed
 {
+    /* IMPORTANT NOTE
+     * ************************************************ *
+     * Please, note. All data types were defined as pre *
+     * sented in 561/2006 Protocol. This project consis *
+     * ts of Basic Types definition and Complex Types d *
+     * efinitions. Also they some functions inside.     *
+     * ************************************************ *
+     */
     internal class DeclarationOfClassesUsed
     {
         #region DataTypes
         //!!!DATA TYPES!!!
         //****************
+        
         //****************
         //!!!DATA TYPES!!!
 
@@ -771,7 +780,7 @@ namespace DDDReader_0._4._0_renewed
         }
 
         internal class NationAlpha
-        {
+        {//nation name signed with letters
             public string nationAlpha { get; set; }
 
             public string getVerboseAlpha()
@@ -893,7 +902,7 @@ namespace DDDReader_0._4._0_renewed
         }
 
         internal class NationNumeric
-        {
+        {//Nation defined by country code
             public int nationNumeric { get; set; }
 
             public string getVerboseNation()
@@ -1184,7 +1193,7 @@ namespace DDDReader_0._4._0_renewed
         }
 
         internal class TimeReal
-        {
+        {//time in seconds since 1/1/1970 00:00:00
             public int timeSec { get; set; }
 
             public string ConvertToUTC()
@@ -1246,14 +1255,14 @@ namespace DDDReader_0._4._0_renewed
         //!!!DATA BUNDLES!!!
 
         internal class Block11
-        {
+        {//I don't know what is this record for
             public Block11Record[] bl11Recs;
             public int bl11RecsCNT = 0;
             public byte[] header = new byte[14];
         }
 
         internal class Block11Record
-        {
+        {//I don't know what is this record for
             public FullCardNumber cardNumber = new FullCardNumber();
             public byte[] payloadData = new byte[30];
             public int sometimesDuration = 0;
@@ -1261,7 +1270,7 @@ namespace DDDReader_0._4._0_renewed
         }
 
         internal class Block13
-        {
+        {//I don't know what is this record for
             public Block11Record[] bl13Recs;
             public int bl13RecsCNT = 0;
             public byte[] header = new byte[29];
@@ -1301,7 +1310,7 @@ namespace DDDReader_0._4._0_renewed
             public VehicleRegistrationIdentification sessionOpenVehicle = new VehicleRegistrationIdentification();
         }
 
-        internal class CardDriverActivity //TODO:Rebuild code in order to separate Definition, Parsing and Xml
+        internal class CardDriverActivity //TODO:Rebuild code in order to separate Definition, Parsing and Xml in different functions
         {
             public int activityPointerNewestRecord;
             public int activityPointerOldestRecord;
@@ -2356,7 +2365,8 @@ namespace DDDReader_0._4._0_renewed
         }
 
         internal struct DailyStatistics
-        {
+        {//Was intended to be a universal struct/class to include all possible counters for driving and 
+         //non-driving activities and faults
             public TimeReal vDayTime;
             public int vCardDailyActivityRecordNumber;
             public int vOrderedArrayId;
@@ -2420,7 +2430,8 @@ namespace DDDReader_0._4._0_renewed
         }
 
         internal class InputRAWDataStorage
-        {
+        {//this block is used to store raw hex input, separated by block ID, its length (set by 
+         //law) and hex byte array
             internal class DataBlock
             {
                 private ByteConvert ByteCon = new ByteConvert();
@@ -2429,7 +2440,7 @@ namespace DDDReader_0._4._0_renewed
                 public byte[] Value;
 
                 public int LengthInt()
-                {
+                {//returns defined length in form of integer
                     return ByteCon.ToInt(Length);
                 }
             }
@@ -2438,11 +2449,14 @@ namespace DDDReader_0._4._0_renewed
         }
 
         internal class PrintingLayout
-        {
+        {//Global variable, that collects all parts of a card information, and stores it as a universal class
+            //First block: Card Identifiers.
             public CardIccIdentification cardICCI = new CardIccIdentification();
             public CardChipIdentification cardCI = new CardChipIdentification();
 
-            internal class DriverCard
+            //Second block: Driver card information. It includes all parts that the driver card is designed to
+            //include.
+            internal class DriverCard 
             {
                 public DriverCardApplicationIdentification DCAI = new DriverCardApplicationIdentification();
                 public CardCertificate CC = new CardCertificate();
@@ -2463,21 +2477,20 @@ namespace DDDReader_0._4._0_renewed
         }
 
         internal class FinesRecord
-        {
+        {//class to contain a single fine record.
             public DateTime DateTime;
             public int Duration;
             public string FaultText;
         }
 
         internal class ShiftTimeCounter
-        {
+        {//was intended to be a counter of all work and rest activities throughout the driver card record.
             public int[] Work;
             public int[] FullRest;
-
         }
 
         internal class EventInfoRoute
-        {
+        {//was replaced by activityChangeInfo
             public DateTime EventStart { get; internal set; }
             public int DurationOfEventInMinutes { get; internal set; }
             public DateTime EventEnd { get; internal set; }
@@ -2497,7 +2510,7 @@ namespace DDDReader_0._4._0_renewed
         }
 
         internal class ShiftStats
-        {
+        {//statistical class for whole shift
             public int shiftID = 0;
             public int workingMinCounter = 0;
             public int dailyBreakMinCounter = 0;
@@ -2512,7 +2525,7 @@ namespace DDDReader_0._4._0_renewed
         }
 
         internal class ViolationRecord
-        {
+        {//This is the actual class that should contain violation record.
             public DateTime ViolationDateTime;
             public int amount;
             public string VIOLATION_TYPE;
